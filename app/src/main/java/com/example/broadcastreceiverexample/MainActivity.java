@@ -10,15 +10,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.SmsMessage;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String MY_ACTION = "MY_ACTION";
+    public static final String MY_ACTION = "MY_ACTION";
     TextView tv_log;
     BroadcastReceiver receiver;
 
@@ -27,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv_log = findViewById(R.id.tv_log);
+        EditText editText = findViewById(R.id.ed_input);
+        String s = getPreferences(MODE_PRIVATE).getString("data","n/a");
+        editText.setText(s);
     }
 
     @Override
@@ -78,15 +84,23 @@ public class MainActivity extends AppCompatActivity {
                     }
                     tv_log.setText(tv_log.getText() + stringBuilder.toString());
                 }
-
             }
         };
 
-
+        registerReceiver(receiver,intentFilter);
 
    }
 
-}
+    public void OnClick(View view) {
+        startService(new Intent(this,MyService.class));
 
+    }
+
+    public void editData(View view) {
+        String s = ((EditText) findViewById(R.id.ed_input)).getText().toString();
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        prefs.edit().putString("data",s).apply();
+    }
+}
 
 
